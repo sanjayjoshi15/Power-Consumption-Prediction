@@ -1,0 +1,84 @@
+# Power Consumption Prediction
+
+This project aims to predict power consumption in Zone 3 of Agadir using machine learning models. Historical data includes features like weather, emissions, and temperature.
+
+## 📁 Project Structure
+
+Power-Consumption-Prediction/
+│
+├── data/ # Raw and processed data
+├── notebooks/ # Jupyter notebooks for EDA and modeling
+├── scripts/ # Python scripts
+│ └── power_prediction.py # Main model pipeline
+├── models/ # Saved models
+├── README.md
+├── requirements.txt # List of dependencies
+└── .gitignore
+---
+
+### ✅ 2. `.gitignore`
+
+```gitignore
+__pycache__/
+.ipynb_checkpoints/
+*.pyc
+*.pkl
+*.h5
+.env
+.env/
+.vscode/
+*.csv
+
+✅ 3. requirements.txt
+pandas
+numpy
+scikit-learn
+matplotlib
+seaborn
+xgboost
+lightgbm
+
+✅ 4. scripts/power_prediction.py
+
+import pandas as pd
+import os
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_squared_error, mean_absolute_error
+
+# Load dataset
+DATA_PATH = 'data/power_data.csv'
+
+if not os.path.exists(DATA_PATH):
+    raise FileNotFoundError(f"{DATA_PATH} not found. Please place the dataset in the 'data' folder.")
+
+df = pd.read_csv(DATA_PATH)
+
+# Display basic info
+print("Dataset preview:")
+print(df.head())
+
+# Preprocessing
+df.dropna(inplace=True)  # Simple missing value handling
+
+# Split features and label
+X = df.drop(columns=['power_consumption'])
+y = df['power_consumption']
+
+# Train-test split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Model training
+model = RandomForestRegressor(n_estimators=100, random_state=42)
+model.fit(X_train, y_train)
+
+# Predictions
+y_pred = model.predict(X_test)
+
+# Evaluation
+rmse = mean_squared_error(y_test, y_pred, squared=False)
+mae = mean_absolute_error(y_test, y_pred)
+
+print(f"\n📊 Evaluation Metrics:")
+print(f"RMSE: {rmse:.2f}")
+print(f"MAE: {mae:.2f}")
